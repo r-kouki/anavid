@@ -73,7 +73,7 @@ assignement  (Copy)/
 
 **Class Balance:** Almost perfectly balanced (133 Class 0, 127 Class 1) ✅
 
-## 🤖 Model Pipeline
+## Model Pipeline
 
 ### 1. Data Loading
 - Reads Excel file directly using pandas and openpyxl
@@ -88,7 +88,8 @@ assignement  (Copy)/
 ├── imputer.pkl              # Preprocessor
 ├── feature_names.pkl        # Feature list
 └── .github/workflows/        # GitHub Actions for deployment
-## 📈 Results
+
+## Results
 
 ### Cross-Validation Performance
 - **Mean F1 Score:** 0.9683 (±0.065)
