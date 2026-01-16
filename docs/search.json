@@ -1,0 +1,205 @@
+[
+  {
+    "objectID": "presentation.html#project-overview",
+    "href": "presentation.html#project-overview",
+    "title": "Student Employability Prediction",
+    "section": "Project Overview",
+    "text": "Project Overview\nResearch Question: Can we predict student employability using measurable academic and professional indicators?\nOur Approach:\n\nDeveloped a Random Forest classification model\nTrained on data from 260 students\nAchieved 92% prediction accuracy\nBuilt an interactive web application for practical use\n\nImpact: This system helps universities identify students who may need additional career support and allows students to understand which skills most influence their job prospects.\n\nThis project demonstrates practical machine learning application in the education sector. We’re using real data to predict employability outcomes and provide actionable insights."
+  },
+  {
+    "objectID": "presentation.html#the-data",
+    "href": "presentation.html#the-data",
+    "title": "Student Employability Prediction",
+    "section": "📁 The Data",
+    "text": "📁 The Data\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n# Load the dataset\ndf = pd.read_excel(\"data.xlsx\", engine='openpyxl')\n\nprint(f\"Dataset size: {df.shape[0]} students, {df.shape[1]} features\")\nprint(f\"\\nColumns: {list(df.columns[:10])} ...\")\n\nDataset size: 260 students, 39 features\n\nColumns: ['ID', 'Gender', 'Nationality', 'Major', 'Level', 'IE1', 'SMSK3', 'RAS1', 'RAS2', 'SMSK1'] ...\n\n\nKey Features:\n\n\n\n📚 Demographics (Gender, Nationality, Major)\n🎯 Skill Assessments (Innovation, Soft Skills)\n🔬 Research & Analytical Skills\n\n\n\n💼 Professional Development Scores\n🏭 Industry Metrics\n💻 Work Experience"
+  },
+  {
+    "objectID": "presentation.html#balanced-classes",
+    "href": "presentation.html#balanced-classes",
+    "title": "Student Employability Prediction",
+    "section": "⚖️ Balanced Classes",
+    "text": "⚖️ Balanced Classes\n\n# Check class distribution\nclass_dist = df['Class'].value_counts()\nprint(f\"Class 0 (Not Highly Employable): {class_dist[0]} students\")\nprint(f\"Class 1 (Highly Employable): {class_dist[1]} students\")\n\n# Visualize\nfig, ax = plt.subplots(figsize=(7, 4))\ncolors = ['#ff6b6b', '#51cf66']\nbars = ax.bar(['Class 0\\n(Not Employable)', 'Class 1\\n(Employable)'], \n              class_dist.values, color=colors, edgecolor='black', linewidth=2)\n\n# Add value labels\nfor bar in bars:\n    height = bar.get_height()\n    ax.text(bar.get_x() + bar.get_width()/2., height,\n            f'{int(height)} students\\n({height/len(df)*100:.1f}%)',\n            ha='center', va='bottom', fontweight='bold', fontsize=12)\n\nax.set_ylabel('Number of Students', fontsize=12)\nax.set_title('Almost Perfectly Balanced Dataset', fontsize=14, fontweight='bold')\nplt.tight_layout()\nplt.show()\n\nClass 0 (Not Highly Employable): 133 students\nClass 1 (Highly Employable): 127 students\n\n\n\n\n\n\n\n\n\nWhy this matters: Balanced data = fair predictions for both classes ✅"
+  },
+  {
+    "objectID": "presentation.html#data-preprocessing",
+    "href": "presentation.html#data-preprocessing",
+    "title": "Student Employability Prediction",
+    "section": "Data Preprocessing",
+    "text": "Data Preprocessing\n\nfrom sklearn.impute import SimpleImputer\n\n# Remove ID column (not predictive)\ndf_clean = df.drop('ID', axis=1)\n\n# Separate features and target\nX = df_clean.drop('Class', axis=1)\ny = df_clean['Class']\n\n# Handle missing values\nimputer = SimpleImputer(strategy='mean')\nX_imputed = imputer.fit_transform(X)\n\nprint(f\"Removed non-predictive ID column\")\nprint(f\"Features: {X.shape[1]} columns\")\nprint(f\"Missing values handled: {df.isnull().sum().sum()} filled with column means\")\n\nRemoved non-predictive ID column\nFeatures: 37 columns\nMissing values handled: 85 filled with column means\n\n\nTechnical Approach:\n\nRemoved identifier columns that don’t contribute to prediction\nApplied mean imputation for missing values (maintains distribution)\nPreserved all 37 feature columns for analysis\n\nFor Non-Technical Readers: We cleaned the data by removing student IDs and filling in any missing test scores with average values, ensuring the model has complete information to work with."
+  },
+  {
+    "objectID": "presentation.html#the-model-random-forest",
+    "href": "presentation.html#the-model-random-forest",
+    "title": "Student Employability Prediction",
+    "section": "🌲 The Model: Random Forest",
+    "text": "🌲 The Model: Random Forest\n\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\n\n# Split data: 80% training, 20% testing\nX_train, X_test, y_train, y_test = train_test_split(\n    X_imputed, y, test_size=0.2, random_state=42, stratify=y\n)\n\n# Create and train the model\nmodel = RandomForestClassifier(n_estimators=100, random_state=42)\nmodel.fit(X_train, y_train)\n\nprint(f\"✓ Model trained with {model.n_estimators} decision trees\")\nprint(f\"✓ Training samples: {len(X_train)}\")\nprint(f\"✓ Test samples: {len(X_test)}\")\n\n✓ Model trained with 100 decision trees\n✓ Training samples: 208\n✓ Test samples: 52\n\n\nTechnical: Ensemble of 100 decision trees with majority voting\nNon-technical: Imagine 100 experts each making a prediction, then we take the majority vote. This reduces errors! 🗳️"
+  },
+  {
+    "objectID": "presentation.html#model-performance",
+    "href": "presentation.html#model-performance",
+    "title": "Student Employability Prediction",
+    "section": "Model Performance",
+    "text": "Model Performance\n\nfrom sklearn.metrics import classification_report, confusion_matrix\nimport seaborn as sns\n\n# Make predictions\ny_pred = model.predict(X_test)\n\n# Print metrics\nprint(\"Performance Metrics:\")\nprint(classification_report(y_test, y_pred))\n\n# Visualize confusion matrix\nfig, ax = plt.subplots(figsize=(6, 4))\ncm = confusion_matrix(y_test, y_pred)\nsns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax,\n            xticklabels=['Not Employable', 'Employable'],\n            yticklabels=['Not Employable', 'Employable'])\nax.set_xlabel('Predicted', fontsize=12)\nax.set_ylabel('Actual', fontsize=12)\nax.set_title('Confusion Matrix: Model Predictions vs Reality', fontsize=13, fontweight='bold')\nplt.tight_layout()\nplt.show()\n\nPerformance Metrics:\n              precision    recall  f1-score   support\n\n           0       0.90      0.96      0.93        27\n           1       0.96      0.88      0.92        25\n\n    accuracy                           0.92        52\n   macro avg       0.93      0.92      0.92        52\nweighted avg       0.93      0.92      0.92        52\n\n\n\n\n\n\n\n\n\n\nResult: 92% accuracy with balanced performance across both classes"
+  },
+  {
+    "objectID": "presentation.html#feature-importance",
+    "href": "presentation.html#feature-importance",
+    "title": "Student Employability Prediction",
+    "section": "🔍 Feature Importance",
+    "text": "🔍 Feature Importance\n\n# Get feature importance\nfeature_importance = pd.DataFrame({\n    'feature': X.columns,\n    'importance': model.feature_importances_\n}).sort_values('importance', ascending=False)\n\nprint(\"Top 5 Most Important Features:\")\nprint(feature_importance.head())\n\n# Visualize top 10\ntop_10 = feature_importance.head(10)\nfig, ax = plt.subplots(figsize=(10, 5))\nbars = ax.barh(top_10['feature'], top_10['importance'], color='#4dabf7', edgecolor='black')\nax.set_xlabel('Importance Score', fontsize=12)\nax.set_title('Top 10 Features That Matter Most', fontsize=14, fontweight='bold')\nax.invert_yaxis()\nplt.tight_layout()\nplt.show()\n\nTop 5 Most Important Features:\n   feature  importance\n30     IM5    0.196434\n31     IM6    0.155455\n27     IM2    0.118184\n29     IM4    0.085489\n26     IM1    0.083829\n\n\n\n\n\n\n\n\n\nInsight: The model focuses most on certain skills and metrics to make predictions."
+  },
+  {
+    "objectID": "presentation.html#our-code-choices",
+    "href": "presentation.html#our-code-choices",
+    "title": "Student Employability Prediction",
+    "section": "💻 Our Code Choices",
+    "text": "💻 Our Code Choices\nWhy Random Forest?\n\n✅ Handles non-linear relationships well\n✅ Robust to outliers and noise\n✅ Provides feature importance automatically\n✅ No need for feature scaling\n✅ Works great with small datasets (260 samples)\n\nWhy StratifiedKFold Cross-Validation?\n\n✅ Maintains class balance in each fold\n✅ More reliable performance estimates\n✅ Prevents overfitting on small datasets\n\nTechnical note: We used n_estimators=100 and random_state=42 for reproducibility."
+  },
+  {
+    "objectID": "presentation.html#why-our-approach-works",
+    "href": "presentation.html#why-our-approach-works",
+    "title": "Student Employability Prediction",
+    "section": "🎯 Why Our Approach Works",
+    "text": "🎯 Why Our Approach Works\nFor Technical Audience:\n\nUsed mean imputation (sklearn-native, preserves distribution)\n80/20 stratified split maintains 51/49 class ratio\n5-fold CV with F1 scoring (balanced precision/recall)\nF1 Score: 0.97 ± 0.06 shows consistent performance\n\nFor Non-Technical Audience:\nThink of our model like a smart filter:\n\n📥 We feed it student data (skills, grades, experience)\n🧠 It learns patterns from 208 students\n✅ We test on 52 new students it hasn’t seen\n🎯 It correctly predicts 92 out of 100 cases!"
+  },
+  {
+    "objectID": "presentation.html#deployment-web-app",
+    "href": "presentation.html#deployment-web-app",
+    "title": "Student Employability Prediction",
+    "section": "🌐 Deployment: Web App",
+    "text": "🌐 Deployment: Web App\nBuilt with Streamlit - Interactive Python web framework\nTwo ways to use:\n\n\n1️⃣ Manual Entry - Enter values one by one - Load example data - Instant prediction - See confidence scores\n\n2️⃣ Excel Upload - Upload .xlsx file - Batch predictions - Download results as CSV - Visual analytics\n\nLive Demo: [Your Streamlit Cloud URL]\n\n\n\n\n\n\nTry It Yourself!\n\n\nUpload your own student data or use manual entry to see predictions in real-time."
+  },
+  {
+    "objectID": "presentation.html#business-value",
+    "href": "presentation.html#business-value",
+    "title": "Student Employability Prediction",
+    "section": "📈 Business Value",
+    "text": "📈 Business Value\nFor Universities:\n\n🎓 Identify students who need more support\n📊 Track program effectiveness\n💡 Focus resources on impactful interventions\n\nFor Students:\n\n🎯 Understand strengths and weaknesses\n📝 Get personalized improvement suggestions\n💼 Better prepare for job market\n\nFor Employers:\n\n🔍 Data-driven candidate screening\n⚡ Faster recruitment decisions\n🎯 Better skill-to-role matching"
+  },
+  {
+    "objectID": "presentation.html#deployment-pipeline",
+    "href": "presentation.html#deployment-pipeline",
+    "title": "Student Employability Prediction",
+    "section": "🚀 Deployment Pipeline",
+    "text": "🚀 Deployment Pipeline\ngraph LR\n    A[Train Model] --&gt; B[Save Artifacts]\n    B --&gt; C[Build Streamlit App]\n    C --&gt; D[Deploy to Cloud]\n    B --&gt; E[Create Analysis]\n    E --&gt; F[GitHub Pages]\n    style A fill:#ffb3ba\n    style C fill:#bae1ff\n    style E fill:#baffc9\nOur Stack:\n\n🐍 Python - Core language\n🤖 scikit-learn - Machine learning\n🎈 Streamlit - Web interface\n📊 Quarto - Documentation & slides\n🔧 GitHub - Version control & hosting"
+  },
+  {
+    "objectID": "presentation.html#key-takeaways",
+    "href": "presentation.html#key-takeaways",
+    "title": "Student Employability Prediction",
+    "section": "📚 Key Takeaways",
+    "text": "📚 Key Takeaways\n\nBalanced data is crucial - Our 51/49 split ensures fair predictions\nRandom Forest is reliable - 92% accuracy with interpretable results\nPreprocessing matters - Handling missing values properly improves performance\nCross-validation prevents overfitting - 5-fold CV gives reliable estimates\nDeployment makes impact - Interactive app makes ML accessible to everyone\n\n\n\n\n\n\n\nReal-World Application\n\n\nThis isn’t just a class project - it’s a production-ready system that can help real students and universities make better decisions."
+  },
+  {
+    "objectID": "presentation.html#future-improvements",
+    "href": "presentation.html#future-improvements",
+    "title": "Student Employability Prediction",
+    "section": "🔮 Future Improvements",
+    "text": "🔮 Future Improvements\nPotential Enhancements:\n\n📊 Add more features (internships, certifications, projects)\n🧠 Try deep learning models (neural networks)\n📈 Real-time data updates and retraining\n🌍 Multi-region support with different job markets\n📱 Mobile app version\n💬 Add explanation system (SHAP values)\n\nResearch Questions:\n\nWhich specific skills most impact employability?\nHow do trends change over time?\nCan we predict salary ranges too?"
+  },
+  {
+    "objectID": "presentation.html#thank-you",
+    "href": "presentation.html#thank-you",
+    "title": "Student Employability Prediction",
+    "section": "Thank You",
+    "text": "Thank You\nQuestions?\nProject Resources:\n\nLive Application: https://anavid-kouki.streamlit.app/\nGitHub Repository: [Link to be added]\nDocumentation: This presentation\nContact: [Your contact information]\n\nAssignment Prepared for: Anavid AI\nAcknowledgments: Thank you to Anavid for providing this learning opportunity and to the students whose anonymized data made this research possible."
+  },
+  {
+    "objectID": "presentation.html#appendix-technical-details",
+    "href": "presentation.html#appendix-technical-details",
+    "title": "Student Employability Prediction",
+    "section": "Appendix: Technical Details",
+    "text": "Appendix: Technical Details\nModel Hyperparameters:\nRandomForestClassifier(\n    n_estimators=100,      # Number of trees\n    random_state=42,        # Reproducibility\n    max_features='sqrt',    # Feature sampling\n    min_samples_split=2,    # Minimum split size\n    min_samples_leaf=1      # Minimum leaf size\n)\nCross-Validation Results:\n\nFold 1: F1 = 0.9412\nFold 2: F1 = 0.9200\nFold 3: F1 = 1.0000\nFold 4: F1 = 1.0000\nFold 5: F1 = 0.9804\nMean: 0.9683 ± 0.0647"
+  },
+  {
+    "objectID": "presentation.html#welcome",
+    "href": "presentation.html#welcome",
+    "title": "Student Employability Prediction",
+    "section": "Welcome",
+    "text": "Welcome\nStudent Employability Prediction System\nThis presentation explores a machine learning solution designed to predict student employability based on academic performance, skills development, and professional preparation.\nInteractive Demo: Try the live application\nAssignment for: Anavid AI\n\nWelcome everyone. Today I’ll be presenting a machine learning project that addresses a critical question in higher education: how can we better predict and improve student employability outcomes?"
+  },
+  {
+    "objectID": "presentation.html#the-dataset",
+    "href": "presentation.html#the-dataset",
+    "title": "Student Employability Prediction",
+    "section": "The Dataset",
+    "text": "The Dataset\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n# Load the dataset\ndf = pd.read_excel(\"data.xlsx\", engine='openpyxl')\n\nprint(f\"Dataset size: {df.shape[0]} students, {df.shape[1]} features\")\nprint(f\"\\nFirst 10 columns: {list(df.columns[:10])}\")\n\nDataset size: 260 students, 39 features\n\nFirst 10 columns: ['ID', 'Gender', 'Nationality', 'Major', 'Level', 'IE1', 'SMSK3', 'RAS1', 'RAS2', 'SMSK1']\n\n\nFeature Categories:\n\n\n\nDemographics: Gender, Nationality, Major, Level\nInnovation & Entrepreneurship: 5 metrics\nSoft & Management Skills: 4 metrics\nResearch & Analytical Skills: 5 metrics\n\n\n\nTechnical & Leadership: 3 metrics\nProfessional Skills Development: 5 metrics\nIndustry Metrics: 6 metrics\nWork Experience: 3 metrics\nEmployment Status & Overall Score"
+  },
+  {
+    "objectID": "presentation.html#class-distribution-analysis",
+    "href": "presentation.html#class-distribution-analysis",
+    "title": "Student Employability Prediction",
+    "section": "Class Distribution Analysis",
+    "text": "Class Distribution Analysis\n\n# Check class distribution\nclass_dist = df['Class'].value_counts()\nprint(f\"Class 0 (Not Highly Employable): {class_dist[0]} students\")\nprint(f\"Class 1 (Highly Employable): {class_dist[1]} students\")\nprint(f\"\\nBalance ratio: {min(class_dist)/max(class_dist):.2%}\")\n\n# Visualize\nfig, ax = plt.subplots(figsize=(7, 4))\ncolors = ['#ff6b6b', '#51cf66']\nbars = ax.bar(['Class 0\\n(Not Highly Employable)', 'Class 1\\n(Highly Employable)'], \n              class_dist.values, color=colors, edgecolor='black', linewidth=2)\n\n# Add value labels\nfor bar in bars:\n    height = bar.get_height()\n    ax.text(bar.get_x() + bar.get_width()/2., height,\n            f'{int(height)} students\\n({height/len(df)*100:.1f}%)',\n            ha='center', va='bottom', fontweight='bold', fontsize=12)\n\nax.set_ylabel('Number of Students', fontsize=12)\nax.set_title('Nearly Balanced Dataset Distribution', fontsize=14, fontweight='bold')\nplt.tight_layout()\nplt.show()\n\nClass 0 (Not Highly Employable): 133 students\nClass 1 (Highly Employable): 127 students\n\nBalance ratio: 95.49%\n\n\n\n\n\n\n\n\n\nWhy this matters: A balanced dataset ensures the model learns both classes equally well, preventing bias toward either outcome."
+  },
+  {
+    "objectID": "presentation.html#model-architecture",
+    "href": "presentation.html#model-architecture",
+    "title": "Student Employability Prediction",
+    "section": "Model Architecture",
+    "text": "Model Architecture\n\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import train_test_split\n\n# Split data: 80% training, 20% testing\nX_train, X_test, y_train, y_test = train_test_split(\n    X_imputed, y, test_size=0.2, random_state=42, stratify=y\n)\n\n# Create and train the model\nmodel = RandomForestClassifier(n_estimators=100, random_state=42)\nmodel.fit(X_train, y_train)\n\nprint(f\"Model trained with {model.n_estimators} decision trees\")\nprint(f\"Training samples: {len(X_train)}\")\nprint(f\"Test samples: {len(X_test)}\")\n\nModel trained with 100 decision trees\nTraining samples: 208\nTest samples: 52\n\n\nTechnical Details: Random Forest is an ensemble method that combines 100 decision trees, each trained on different subsets of data. Final prediction is determined by majority vote.\nSimplified Explanation: Think of it like consulting 100 experts who each make a prediction based on slightly different information. The final answer is what most experts agree on. This approach reduces errors and improves reliability."
+  },
+  {
+    "objectID": "presentation.html#feature-importance-analysis",
+    "href": "presentation.html#feature-importance-analysis",
+    "title": "Student Employability Prediction",
+    "section": "Feature Importance Analysis",
+    "text": "Feature Importance Analysis\n\n# Get feature importance\nfeature_importance = pd.DataFrame({\n    'feature': X.columns,\n    'importance': model.feature_importances_\n}).sort_values('importance', ascending=False)\n\nprint(\"Top 5 Most Important Features:\")\nprint(feature_importance.head())\n\n# Visualize top 10\ntop_10 = feature_importance.head(10)\nfig, ax = plt.subplots(figsize=(10, 5))\nbars = ax.barh(top_10['feature'], top_10['importance'], color='#4dabf7', edgecolor='black')\nax.set_xlabel('Importance Score', fontsize=12)\nax.set_title('Top 10 Features Influencing Employability Predictions', fontsize=14, fontweight='bold')\nax.invert_yaxis()\nplt.tight_layout()\nplt.show()\n\nTop 5 Most Important Features:\n   feature  importance\n30     IM5    0.196434\n31     IM6    0.155455\n27     IM2    0.118184\n29     IM4    0.085489\n26     IM1    0.083829\n\n\n\n\n\n\n\n\n\nKey Insight: The model identifies which specific skills and experiences most strongly correlate with employability outcomes."
+  },
+  {
+    "objectID": "presentation.html#technical-implementation",
+    "href": "presentation.html#technical-implementation",
+    "title": "Student Employability Prediction",
+    "section": "Technical Implementation",
+    "text": "Technical Implementation\nAlgorithm Selection: Random Forest\nWhy we chose this approach:\n\nHandles non-linear relationships between features effectively\nRobust to outliers and noisy data\nProvides interpretable feature importance scores\nNo need for feature scaling or normalization\nPerforms well on small to medium datasets (our 260 samples)\n\nCross-Validation Strategy:\n\n5-fold Stratified K-Fold cross-validation\nMaintains class distribution in each fold\nProvides robust performance estimates\nPrevents overfitting on small datasets\n\nKey Hyperparameters:\n\nn_estimators=100: Number of trees in the forest\nrandom_state=42: Ensures reproducibility\nstratify=y: Preserves class balance in train/test split"
+  },
+  {
+    "objectID": "presentation.html#why-this-approach-works",
+    "href": "presentation.html#why-this-approach-works",
+    "title": "Student Employability Prediction",
+    "section": "Why This Approach Works",
+    "text": "Why This Approach Works\nFor Technical Audience:\n\nMean imputation preserves feature distributions (sklearn-native approach)\n80/20 stratified split maintains 51/49 class ratio across sets\n5-fold cross-validation with F1 scoring balances precision and recall\nF1 Score: 0.97 ± 0.06 demonstrates consistent, reliable performance\n\nFor Business Stakeholders:\nOur model works like a smart recommendation system:\n\nWe feed it information about students (grades, skills, experience)\nIt learns patterns from 208 training cases\nWe test it on 52 new students it hasn’t seen before\nIt correctly predicts 92 out of every 100 cases\n\nThis level of accuracy makes it practical for real-world decision support."
+  },
+  {
+    "objectID": "presentation.html#interactive-web-application",
+    "href": "presentation.html#interactive-web-application",
+    "title": "Student Employability Prediction",
+    "section": "Interactive Web Application",
+    "text": "Interactive Web Application\nLive Demo: https://anavid-kouki.streamlit.app/\nFeatures:\n\n\nManual Entry Mode - Enter student data field by field - Load example data for quick testing - Instant prediction with confidence scores - Visual probability display\n\nBatch Processing Mode - Upload Excel files with multiple students - Process all records at once - Download results as CSV - Summary statistics and visualizations\n\nTechnology Stack:\n\nFrontend: Streamlit (Python web framework)\nBackend: scikit-learn (ML library)\nDeployment: Streamlit Community Cloud\nModel Persistence: joblib"
+  },
+  {
+    "objectID": "presentation.html#business-value-applications",
+    "href": "presentation.html#business-value-applications",
+    "title": "Student Employability Prediction",
+    "section": "Business Value & Applications",
+    "text": "Business Value & Applications\nFor Universities:\n\nIdentify at-risk students early in their academic journey\nAllocate career development resources more effectively\nTrack program effectiveness across different majors\nDemonstrate outcomes to accreditation bodies\n\nFor Students:\n\nUnderstand personal strengths and development areas\nReceive targeted skill-building recommendations\nMake informed decisions about internships and extracurriculars\nTrack progress toward career readiness\n\nFor Employers:\n\nData-driven candidate screening\nFaster preliminary assessment\nBetter skill-to-role matching\nReduced hiring process duration"
+  },
+  {
+    "objectID": "presentation.html#key-findings",
+    "href": "presentation.html#key-findings",
+    "title": "Student Employability Prediction",
+    "section": "Key Findings",
+    "text": "Key Findings\nFrom our analysis of 260 students:\n\nClass Balance is Critical: Our 51/49 split ensures fair predictions for all students, avoiding bias toward either outcome.\nMultiple Factors Matter: No single metric dominates. Employability depends on a combination of academic performance, practical skills, and professional development.\nAccuracy is High: 92% accuracy suggests the features we measured genuinely correlate with employability outcomes.\nModel is Practical: Cross-validation (F1 = 0.97 ± 0.06) shows the model generalizes well beyond training data, making it reliable for real-world use.\nInterpretation is Possible: Feature importance scores allow us to explain why the model makes specific predictions, building trust with users."
+  },
+  {
+    "objectID": "presentation.html#limitations-future-work",
+    "href": "presentation.html#limitations-future-work",
+    "title": "Student Employability Prediction",
+    "section": "Limitations & Future Work",
+    "text": "Limitations & Future Work\nCurrent Limitations:\n\nDataset size: 260 students is relatively small for deep learning approaches\nTemporal scope: Data represents a single time point, not longitudinal tracking\nGeographic limitation: Results may not generalize across different education systems\nFeature selection: Limited to available measurements, may miss important factors\n\nPlanned Enhancements:\n\nExpand dataset with additional institutions and cohorts\nAdd longitudinal tracking to understand career trajectory over time\nIncorporate additional features (certifications, projects, networking activities)\nDevelop explanation system using SHAP values for transparent predictions\nCreate mobile application for broader accessibility\nImplement automated model retraining pipeline"
+  },
+  {
+    "objectID": "presentation.html#deployment-architecture",
+    "href": "presentation.html#deployment-architecture",
+    "title": "Student Employability Prediction",
+    "section": "Deployment Architecture",
+    "text": "Deployment Architecture\nProduction Pipeline:\ngraph LR\n    A[Raw Data] --&gt; B[Preprocessing]\n    B --&gt; C[Model Training]\n    C --&gt; D[Model Validation]\n    D --&gt; E[Save Artifacts]\n    E --&gt; F[Streamlit App]\n    E --&gt; G[GitHub Pages]\n    F --&gt; H[User Predictions]\nInfrastructure:\n\nVersion Control: GitHub for code and documentation\nModel Storage: Serialized with joblib (model.pkl, imputer.pkl)\nWeb Application: Streamlit Community Cloud (free tier)\nDocumentation: Quarto for reproducible presentations\nCI/CD: GitHub Actions for automated deployment\n\nCost: Entirely free using community tiers and open-source tools"
+  },
+  {
+    "objectID": "presentation.html#conclusion",
+    "href": "presentation.html#conclusion",
+    "title": "Student Employability Prediction",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis project demonstrates a complete machine learning workflow from data analysis through production deployment:\nTechnical Achievement: - Built a robust classification system with 92% accuracy - Implemented proper validation and testing procedures - Created production-ready deployment infrastructure\nPractical Impact: - Provides actionable insights for career development - Scales to handle individual or batch predictions - Accessible through user-friendly web interface\nLearning Outcomes: - Applied supervised learning to real-world problem - Balanced technical rigor with practical usability - Demonstrated end-to-end ML system development\nTry it yourself: https://anavid-kouki.streamlit.app/"
+  }
+]

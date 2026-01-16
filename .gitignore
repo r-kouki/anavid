@@ -89,3 +89,5 @@ _book/
 
 # Logs
 *.log
+
+**/*.quarto_ipynb

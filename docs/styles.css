@@ -1,0 +1,16 @@
+/* Additional styles for Quarto presentation */
+.center {
+  text-align: center;
+}
+
+.reveal .slide-background {
+  background-size: cover;
+}
+
+.reveal ul {
+  margin-top: 1em;
+}
+
+.reveal li {
+  margin: 0.5em 0;
+}
