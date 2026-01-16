@@ -80,8 +80,9 @@ model_results.png
 _site/
 _book/
 *_cache/
+_freeze/
 
-# Model artifacts
+# Model artifacts - KEEP .pkl files for Streamlit deployment
 #*.pkl
 
 # Streamlit
@@ -89,5 +90,6 @@ _book/
 
 # Logs
 *.log
+nohup.out
 
 **/*.quarto_ipynb
