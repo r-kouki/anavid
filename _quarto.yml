@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Employability ML Project"
+  navbar:
+    left:
+      - text: "Presentation"
+        href: presentation.html
+  page-footer:
+    center: "Employability Prediction Project - 2026"
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: false
+    code-tools: true
+
+execute:
+  freeze: auto

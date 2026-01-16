@@ -28,6 +28,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
@@ -140,5 +141,23 @@ plt.show()
 
 print()
 print("=" * 50)
-print("DONE! Plots saved to 'model_results.png'")
+print("SAVING MODEL ARTIFACTS")
+print("=" * 50)
+
+# Save the trained model for deployment
+joblib.dump(clf_final, 'model.pkl')
+print("✓ Model saved: model.pkl")
+
+# Save the imputer for consistent preprocessing
+joblib.dump(imputer, 'imputer.pkl')
+print("✓ Imputer saved: imputer.pkl")
+
+# Save feature names for input validation
+feature_names = list(X.columns)
+joblib.dump(feature_names, 'feature_names.pkl')
+print(f"✓ Feature names saved: {len(feature_names)} features")
+
+print()
+print("=" * 50)
+print("DONE! All artifacts saved for deployment")
 print("=" * 50)

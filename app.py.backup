@@ -1,0 +1,459 @@
+"""
+================================================================================
+EMPLOYABILITY PREDICTION - Streamlit App
+================================================================================
+Interactive web application for predicting student employability using a 
+trained Random Forest model.
+
+Assignment for Anavid - January 2026
+
+Two input modes:
+1. Manual Entry: Enter values one by one
+2. Excel Upload: Upload an Excel file with student data
+================================================================================
+"""
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load custom CSS
+def local_css():
+    try:
+        with open("style.css") as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    except:
+        pass
+
+local_css()
+
+# Page configuration
+st.set_page_config(
+    page_title="Employability Predictor - Anavid Assignment",
+    page_icon="🎓",
+    layout="wide"
+)
+
+# Load model artifacts
+@st.cache_resource
+def load_model_artifacts():
+    """Load the trained model, imputer, and feature names"""
+    try:
+        model = joblib.load('model.pkl')
+        imputer = joblib.load('imputer.pkl')
+        feature_names = joblib.load('feature_names.pkl')
+        return model, imputer, feature_names
+    except FileNotFoundError as e:
+        st.error(f"Model files not found. Please run classification_model.py first to train and save the model.")
+        st.stop()
+
+model, imputer, feature_names = load_model_artifacts()
+
+# Feature descriptions for better user understanding
+FEATURE_DESCRIPTIONS = {
+    'Gender': 'Gender (0=Female, 1=Male)',
+    'Nationality': 'Nationality Code',
+    'Major': 'Field of Study',
+    'Level': 'Education Level',
+    'IE1': 'Innovation & Entrepreneurship Score 1',
+    'IE2': 'Innovation & Entrepreneurship Score 2',
+    'IE3': 'Innovation & Entrepreneurship Score 3',
+    'IE4': 'Innovation & Entrepreneurship Score 4',
+    'IE5': 'Innovation & Entrepreneurship Score 5',
+    'SMSK1': 'Soft Skills Score 1',
+    'SMSK2': 'Soft Skills Score 2',
+    'SMSK3': 'Soft Skills Score 3',
+    'SMSK4': 'Soft Skills Score 4',
+    'RAS1': 'Research & Analytical Skills 1',
+    'RAS2': 'Research & Analytical Skills 2',
+    'RAS3': 'Research & Analytical Skills 3',
+    'RAS4': 'Research & Analytical Skills 4',
+    'RAS5': 'Research & Analytical Skills 5',
+    'TL1': 'Technical & Leadership Skills 1',
+    'TL2': 'Technical & Leadership Skills 2',
+    'TL3': 'Technical & Leadership Skills 3',
+    'PSD1': 'Professional Skills Development 1',
+    'PSD2': 'Professional Skills Development 2',
+    'PSD3': 'Professional Skills Development 3',
+    'PSD4': 'Professional Skills Development 4',
+    'PSD5': 'Professional Skills Development 5',
+    'IM1': 'Industry Metrics 1',
+    'IM2': 'Industry Metrics 2',
+    'IM3': 'Industry Metrics 3',
+    'IM4': 'Industry Metrics 4',
+    'IM5': 'Industry Metrics 5',
+    'IM6': 'Industry Metrics 6',
+    'W1': 'Work Experience Metric 1',
+    'W2': 'Work Experience Metric 2',
+    'W3': 'Work Experience Metric 3',
+    'Employed': 'Currently Employed (0=No, 1=Yes)',
+    'Score': 'Overall Score'
+}
+
+def make_prediction(data_df):
+    """
+    Make prediction on input data
+    
+    Args:
+        data_df: DataFrame with feature values
+        
+    Returns:
+        predictions, probabilities
+    """
+    # Ensure columns are in correct order
+    data_df = data_df[feature_names]
+    
+    # Apply same preprocessing as training
+    data_imputed = imputer.transform(data_df)
+    
+    # Make predictions
+    predictions = model.predict(data_imputed)
+    probabilities = model.predict_proba(data_imputed)
+    
+    return predictions, probabilities
+
+# App Title and Description
+st.title("🎓 Student Employability Prediction System")
+
+# Anavid Assignment Attribution
+st.markdown("""
+<div style='background-color: #f0f2f6; padding: 15px; border-left: 4px solid #0066cc; margin-bottom: 20px;'>
+    <p style='margin: 0; font-size: 14px;'>
+        <strong>Assignment for <a href='https://www.anavid.ai/fr/home' target='_blank' style='color: #0066cc; text-decoration: none;'>Anavid</a></strong><br>
+        Machine Learning Classification Project - January 2026
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+This application predicts whether a student is likely to be employable based on their skills, 
+education, and experience. The model uses a **Random Forest Classifier** trained on 260 student records.
+
+**Prediction Classes:**
+- **Class 0**: Not Highly Employable
+- **Class 1**: Highly Employable
+""")
+
+st.divider()
+
+# Input Mode Selection
+input_mode = st.radio(
+    "Choose Input Method:",
+    ["📝 Manual Entry", "📁 Upload Excel File"],
+    horizontal=True
+)
+
+st.divider()
+
+if input_mode == "📝 Manual Entry":
+    st.subheader("Enter Student Data Manually")
+    
+    # Create columns for better layout
+    col1, col2, col3 = st.columns(3)
+    
+    input_data = {}
+    
+    # Distribute inputs across columns
+    features_per_col = len(feature_names) // 3 + 1
+    
+    with col1:
+        for i, feature in enumerate(feature_names[:13]):
+            description = FEATURE_DESCRIPTIONS.get(feature, feature)
+            input_data[feature] = st.number_input(
+                description,
+                value=0.0,
+                key=f"manual_{feature}",
+                help=f"Enter value for {feature}"
+            )
+    
+    with col2:
+        for i, feature in enumerate(feature_names[13:26]):
+            description = FEATURE_DESCRIPTIONS.get(feature, feature)
+            input_data[feature] = st.number_input(
+                description,
+                value=0.0,
+                key=f"manual_{feature}",
+                help=f"Enter value for {feature}"
+            )
+    
+    st.divider()
+    
+    st.markdown("### 🎯 Ready to Predict?")
+    col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
+    
+    # Example data
+    example_data = {
+        'Gender': 1.0, 'Nationality': 2.0, 'Major': 1.0, 'Level': 3.0,
+        'IE1': 4.0, 'SMSK3': 3.0, 'RAS1': 4.0, 'RAS2': 3.0,
+        'SMSK1': 4.0, 'SMSK4': 4.0, 'IE2': 3.0, 'TL1': 4.0,
+        'RAS3': 3.0, 'IE3': 4.0, 'RAS4': 4.0, 'RAS5': 3.0,
+        'IE4': 4.0, 'SMSK2': 3.0, 'TL2': 4.0, 'TL3': 3.0,
+        'PSD1': 4.0, 'PSD2': 4.0, 'PSD3': 3.0, 'IE5': 4.0,
+        'PSD4': 4.0, 'PSD5': 3.0, 'IM1': 4.0, 'IM2': 3.0,
+        'IM3': 4.0, 'IM4': 3.0, 'IM5': 4.0, 'IM6': 4.0,
+        'W1': 3.0, 'W2': 4.0, 'W3': 3.0, 'Employed': 1.0, 'Score': 85.0
+    }
+    
+    with col_btn1:
+        load_example = st.button("📊 Load Test Data", use_container_width=True)
+        if load_example:
+            st.success("✅ Test data loaded!")
+            input_data = example_data.copy()
+    
+    with col_btn2:
+        clear_button = st.button("🔄 Clear All", use_container_width=True)
+        if clear_button:
+            st.rerun()
+    
+    with col_btn3:
+        predict_button = st.button("🔮 Predict Employability", type="primary", use_container_width=True)
+    
+    if predict_button:
+        # Create DataFrame from input
+        input_df = pd.DataFrame([input_data])
+        
+        # Make prediction
+        predictions, probabilities = make_prediction(input_df)
+        
+        # Display results
+        st.success("✅ Prediction Complete!")
+        
+        result_col1, result_col2 = st.columns(2)
+        
+        with result_col1:
+            st.metric(
+                label="Predicted Class",
+                value=f"Class {predictions[0]}",
+                delta="Highly Employable" if predictions[0] == 1 else "Not Highly Employable"
+            )
+        
+        with result_col2:
+            confidence = probabilities[0][predictions[0]] * 100
+            st.metric(
+                label="Confidence",
+                value=f"{confidence:.1f}%"
+            )
+        
+        # Probability bars
+        st.subheader("Prediction Probabilities")
+        prob_df = pd.DataFrame({
+            'Class': ['Class 0 (Not Employable)', 'Class 1 (Employable)'],
+            'Probability': probabilities[0]
+       markdown("""
+    ### 📋 Instructions
+    1. **Prepare your Excel file** with student data (see format below)
+    2. **Upload** the file using the button below
+    3. **Preview** your data to ensure it's correct
+    4. **Click Predict** to get results for all students
+    """)
+    
+    with st.expander("📖 File Format Requirements", expanded=False):
+        st.markdown("""
+        **Required:**
+        - Excel file (.xlsx or .xls format)
+        - Must contain all 37 feature columns
+        - Can include multiple student records (rows)
+        
+        **Features List:**
+        - Demographics: Gender, Nationality, Major, Level
+        - Innovation & Entrepreneurship: IE1, IE2, IE3, IE4, IE5
+        - Soft Skills: SMSK1, SMSK2, SMSK3, SMSK4
+        - Research & Analytical: RAS1, RAS2, RAS3, RAS4, RAS5
+        - Technical & Leadership: TL1, TL2, TL3
+        - Professional Development: PSD1, PSD2, PSD3, PSD4, PSD5
+        - Industry Metrics: IM1, IM2, IM3, IM4, IM5, IM6
+        - Work Experience: W1, W2, W3
+        - Other: Employed, Score
+        
+        **Note:** Missing values will be automatically filled with mean values from training data.
+        """)
+    
+    # File uploader
+    uploaded_file = st.file_uploader(
+        "Choose an Excel file (.xlsx or .xls)",
+        type=['xlsx', 'xls'],
+        help="Upload your Excel file containing student data"
+    )
+    
+    if uploaded_file is not None:
+    - Excel file (.xlsx or .xls), use_container_width=True
+    - Must contain all 37 feature columns
+    - Can include multiple student records (rows)
+    - Missing values will be handled automatically
+    """)
+    
+    # File uploader
+    uploaded_file = st.file_uploader(
+        "Choose an Excel file",
+        type=['xlsx', 'xls'],
+        help="Upload an Excel file containing student data"
+    )
+    
+    if uploaded_file is not None:
+        try:
+            # Read the uploaded file
+            df_upload = pd.read_excel(uploaded_file, engine='openpyxl')
+            
+            st.success(f"✅ File uploaded successfully! Found {len(df_upload)} student record(s).")
+            
+            # Show preview
+            with st.expander("📋 Preview Data"):
+                st.dataframe(df_upload.head(10))
+            
+            # Check if all required features are present
+            missing_features = set(feature_names) - set(df_upload.columns)
+            extra_columns = set(df_upload.columns) - set(feature_names)
+            
+            if missing_features:
+                st.warning(f"⚠️ Missing features: {', '.join(missing_features)}")
+                st.info("Missing features will be filled with mean values from training data.")
+            
+            if extra_columns:
+                st.info(f"ℹ️ Extra columns will be ignored: {', '.join(extra_columns)}")
+                # Drop extra columns except ID if present
+                cols_to_keep = [col for col in df_upload.columns if col in feature_names or col == 'ID']
+                df_upload = df_upload[cols_to_keep]
+            
+            # Predict button
+            if st.button("🔮 Predict All Records", type="primary"):
+                # Prepare data
+                if 'ID' in df_upload.columns:
+                    ids = df_upload['ID'].copy()
+                    df_predict = df_upload.drop('ID', axis=1)
+                else:
+                    ids = pd.Series(range(1, len(df_upload) + 1))
+                    df_predict = df_upload.copy()
+                
+                # Add missing columns with NaN
+                for feature in feature_names:
+                    if feature not in df_predict.columns:
+                    use_container_width=Truefeature] = np.nan
+                
+                # Make predictions
+                predictions, probabilities = make_prediction(df_predict)
+                
+                # Create results DataFrame
+                results_df = pd.DataFrame({
+                    'ID': ids,
+                    'Predicted_Class': predictions,
+                    'Class_0_Probability': probabilities[:, 0],
+                    'Class_1_Probability': probabilities[:, 1],
+                    'Confidence': [probabilities[i, predictions[i]] for i in range(len(predictions))],
+                    'Prediction': ['Highly Employable' if p == 1 else 'Not Highly Employable' for p in predictions]
+                })
+                
+                st.success("✅ Predictions Complete!")
+                
+                # Summary statistics
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Records", len(results_df))
+                with col2:
+                    employable_count = (predictions == 1).sum()
+                    st.metric("Highly Employable", employable_count)
+                with col3:
+                    avg_confidence = results_df['Confidence'].mean() * 100
+                    st.metric("Avg Confidence", f"{avg_confidence:.1f}%")
+                
+                # Show results
+       image("https://www.anavid.ai/img/logo.svg", width=150)
+    
+    st.markdown("---")
+    
+    st.header("ℹ️ About This Project")
+    st.markdown("""
+    **Assignment for [Anavid](https://www.anavid.ai/fr/home)**
+    
+    Machine Learning classification system for predicting student employability.
+    
+    **Date:** January 2026
+    """)
+    
+    st.markdown("---")
+    
+    st.header("📊 Model Information")
+    st.markdown("""
+    **Algorithm:** Random Forest Classifier
+    
+    **Training Data:** 260 students
+    
+    **Features:** 37 input features
+    - Demographics
+    - Skill assessmentsions.csv",
+                    mime="text/csv",
+                    width="stretch"
+                )
+                
+                # Visualization
+                st.subheader("Results Visualization")
+                
+                fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+                
+                # Class distribution
+                class_counts = pd.Series(predictions).value_counts().sort_index()
+                axes[0].pie(class_counts, labels=['Not Employable', 'Employable'], 
+                   Mode:**
+    1. Select "Manual Entry"
+    2. Click "Load Test Data" to see an example
+    3. Or enter your own values
+    4. Click "Predict Employability"
+    
+    **Excel Upload Mode:**
+    1. Select "Upload Excel File"
+    2. Prepare Excel file with 37 features
+    3. Upload your file
+    4. Click "Predict All Records"
+    5. Download results as CSV
+    """)
+    
+    st.divider()
+    
+    st.caption("Built with Streamlit 🎈")
+    st.caption("Powered by scikit-learn")
+    st.caption("© 2026 Anavid Assignment
+    st.header("ℹ️ Model Information")
+    st.markdown("""
+    **Model Type:** Random Forest Classifier
+    
+    **Training Data:** 260 students
+    
+    **Features:** 37 input features
+    - Demographics (Gender, Nationality, etc.)
+    - Skill assessments (IE, SMSK, RAS, TL, PSD, IM)
+    - Work experience metrics
+    - Employment status
+    
+    **Performance:**
+    - Accuracy: 92%
+    - F1 Score: 0.97 (±0.06)
+    
+    **Class Balance:**
+    - Class 0: 133 students (51%)
+    - Class 1: 127 students (49%)
+    """)
+    
+    st.divider()
+    
+    st.header("📚 How to Use")
+    st.markdown("""
+    **Manual Entry:**
+    1. Select "Manual Entry" mode
+    2. Enter values for each feature
+    3. Click "Load Example Data" for demo
+    4. Click "Predict" to see results
+    
+    **Excel Upload:**
+    1. Select "Upload Excel File" mode
+    2. Upload .xlsx/.xls file
+    3. Review data preview
+    4. Click "Predict All Records"
+    5. Download results as CSV
+    """)
+    
+    st.divider()
+    
+    st.caption("Built with Streamlit 🎈")
+    st.caption("Model trained with scikit-learn")

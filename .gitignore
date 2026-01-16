@@ -75,5 +75,17 @@ model_results.png
 # *.csv
 # *.xlsx
 
+# Quarto
+/.quarto/
+_site/
+_book/
+*_cache/
+
+# Model artifacts
+*.pkl
+
+# Streamlit
+.streamlit/secrets.toml
+
 # Logs
 *.log

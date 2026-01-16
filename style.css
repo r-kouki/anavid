@@ -1,0 +1,80 @@
+/* Custom CSS for classic squared button style */
+
+/* Square buttons - remove rounded corners */
+.stButton > button {
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border: 2px solid #0066cc !important;
+    transition: all 0.2s ease !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2) !important;
+}
+
+/* Primary button style */
+.stButton > button[kind="primary"] {
+    background-color: #0066cc !important;
+    color: white !important;
+    border: 2px solid #0066cc !important;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background-color: #0052a3 !important;
+    border-color: #0052a3 !important;
+}
+
+/* Secondary button style */
+.stButton > button[kind="secondary"] {
+    background-color: white !important;
+    color: #0066cc !important;
+    border: 2px solid #0066cc !important;
+}
+
+.stButton > button[kind="secondary"]:hover {
+    background-color: #f0f2f6 !important;
+}
+
+/* Download button */
+.stDownloadButton > button {
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+}
+
+/* Input fields - squared style */
+.stNumberInput > div > div > input,
+.stSelectbox > div > div > select,
+.stTextInput > div > div > input {
+    border-radius: 4px !important;
+}
+
+/* File uploader - squared style */
+.stFileUploader > div {
+    border-radius: 4px !important;
+}
+
+/* Metrics - squared style */
+.stMetric {
+    background-color: #f0f2f6 !important;
+    padding: 1rem !important;
+    border-radius: 4px !important;
+    border-left: 4px solid #0066cc !important;
+}
+
+/* Dataframe - squared style */
+.stDataFrame {
+    border-radius: 4px !important;
+}
+
+/* Expander - squared style */
+.streamlit-expanderHeader {
+    border-radius: 4px !important;
+    background-color: #f0f2f6 !important;
+}
+
+/* Info/Warning/Success boxes - squared */
+.stAlert {
+    border-radius: 4px !important;
+}
