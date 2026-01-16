@@ -4,8 +4,8 @@ Machine learning project predicting student employability using Random Forest cl
 
 ##  Live Demos
 
-** Streamlit App:** [https://anavid-kouki.streamlit.app/](https://anavid-kouki.streamlit.app/) - Interactive predictions
-** Presentation:** [http://koukiabderrahmen.me/anavid/presentation.html](http://koukiabderrahmen.me/anavid/presentation.html) - Technical presentation
+- ** Streamlit App:**  [https://anavid-kouki.streamlit.app/](https://anavid-kouki.streamlit.app/) - Interactive predictions
+- ** Presentation:**  [http://koukiabderrahmen.me/anavid/presentation.html](http://koukiabderrahmen.me/anavid/presentation.html) - Technical presentation
 
 ## 📋 Project Overview
 
