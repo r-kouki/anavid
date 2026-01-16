@@ -255,7 +255,7 @@ Anavid Assignment - January 2026
 </section>
 <section id="the-dataset" class="slide level2 smaller">
 <h2>The Dataset</h2>
-<div id="e503b763" class="cell" data-execution_count="1">
+<div id="0852cf19" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a></a></span>
@@ -291,7 +291,7 @@ First 10 columns: ['ID', 'Gender', 'Nationality', 'Major', 'Level', 'IE1', 'SMSK
 </section>
 <section id="class-distribution-analysis" class="slide level2 smaller">
 <h2>Class Distribution Analysis</h2>
-<div id="c92767f0" class="cell" data-fig-height="5" data-fig-width="8" data-execution_count="2">
+<div id="8f0be879" class="cell" data-fig-height="5" data-fig-width="8" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># Check class distribution</span></span>
 <span id="cb3-2"><a></a>class_dist <span class="op">=</span> df[<span class="st">'Class'</span>].value_counts()</span>
 <span id="cb3-3"><a></a><span class="bu">print</span>(<span class="ss">f"Class 0 (Not Highly Employable): </span><span class="sc">{</span>class_dist[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> students"</span>)</span>
@@ -324,7 +324,7 @@ Balance ratio: 95.49%</code></pre>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="presentation_files/figure-revealjs/cell-3-output-2.png" class="quarto-figure quarto-figure-center" width="663" height="374"></p>
+<p><img data-src="presentation_files/figure-revealjs/cell-3-output-2.png" class="quarto-figure quarto-figure-center" width="663" height="371"></p>
 </figure>
 </div>
 </div>
@@ -333,7 +333,7 @@ Balance ratio: 95.49%</code></pre>
 </section>
 <section id="data-preprocessing" class="slide level2 smaller">
 <h2>Data Preprocessing</h2>
-<div id="eaeb1fa8" class="cell" data-execution_count="3">
+<div id="952952f8" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
 <span id="cb5-2"><a></a></span>
 <span id="cb5-3"><a></a><span class="co"># Remove ID column (not predictive)</span></span>
@@ -366,7 +366,7 @@ Missing values handled: 85 filled with column means</code></pre>
 </section>
 <section id="model-architecture" class="slide level2 smaller">
 <h2>Model Architecture</h2>
-<div id="b5bee702" class="cell" data-execution_count="4">
+<div id="0c1e2994" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
 <span id="cb7-2"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb7-3"><a></a></span>
@@ -393,7 +393,7 @@ Test samples: 52</code></pre>
 </section>
 <section id="model-performance" class="slide level2 smaller">
 <h2>Model Performance</h2>
-<div id="46ed8a9f" class="cell" data-fig-height="4" data-fig-width="10" data-execution_count="5">
+<div id="36f70ba3" class="cell" data-fig-height="4" data-fig-width="10" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, confusion_matrix</span>
 <span id="cb9-2"><a></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb9-3"><a></a></span>
@@ -430,7 +430,7 @@ weighted avg       0.93      0.92      0.92        52
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="presentation_files/figure-revealjs/cell-6-output-2.png" class="quarto-figure quarto-figure-center" width="532" height="374"></p>
+<p><img data-src="presentation_files/figure-revealjs/cell-6-output-2.png" class="quarto-figure quarto-figure-center" width="531" height="373"></p>
 </figure>
 </div>
 </div>
@@ -439,7 +439,7 @@ weighted avg       0.93      0.92      0.92        52
 </section>
 <section id="feature-importance-analysis" class="slide level2 smaller">
 <h2>Feature Importance Analysis</h2>
-<div id="bfe307ca" class="cell" data-fig-height="5" data-fig-width="10" data-execution_count="6">
+<div id="48667840" class="cell" data-fig-height="5" data-fig-width="10" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a><span class="co"># Get feature importance</span></span>
 <span id="cb11-2"><a></a>feature_importance <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb11-3"><a></a>    <span class="st">'feature'</span>: X.columns,</span>
@@ -470,7 +470,7 @@ weighted avg       0.93      0.92      0.92        52
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="presentation_files/figure-revealjs/cell-7-output-2.png" class="quarto-figure quarto-figure-center" width="950" height="470"></p>
+<p><img data-src="presentation_files/figure-revealjs/cell-7-output-2.png" class="quarto-figure quarto-figure-center" width="950" height="469"></p>
 </figure>
 </div>
 </div>
