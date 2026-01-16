@@ -82,7 +82,7 @@ _book/
 *_cache/
 
 # Model artifacts
-*.pkl
+#*.pkl
 
 # Streamlit
 .streamlit/secrets.toml
